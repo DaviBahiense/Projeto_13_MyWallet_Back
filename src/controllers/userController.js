@@ -54,4 +54,17 @@ export async function user (req, res)  {
     res.sendStatus(500);
   }
   }
+
+  export async function deleteItem(req, res) {
+
+    const { id } = req.params
+
+    try {
+        await db.collection('wallet').deleteOne({ _id: new ObjectId(id) })
+        res.sendStatus(200);
+
+    } catch (error) {
+        res.sendStatus(error)
+    }
+}
   
