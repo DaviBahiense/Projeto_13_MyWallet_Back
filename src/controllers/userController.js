@@ -58,10 +58,24 @@ export async function user (req, res)  {
   export async function deleteItem(req, res) {
 
     const { id } = req.params
-
+    const authorization = req.headers.authorization;
+    const token = authorization?.replace('Bearer ', '');
+    
+    const session = await db.collection("session").findOne({ token });
+    if (!session) {
+      return res.sendStatus(401);
+    }
+    const user = await db.collection("users").findOne({ _id: session.userId });
+    if (!user) {
+      return res.sendStatus(401);
+    }
+    const exclude = user.movimentation[id]
+    console.log(exclude)
     try {
-        await db.collection('wallet').deleteOne({ _id: new ObjectId(id) })
-        res.sendStatus(200);
+      await db.collection("users").deleteOne({
+        exclude
+      })
+      res.sendStatus(200);
 
     } catch (error) {
         res.sendStatus(error)
